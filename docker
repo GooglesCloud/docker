@@ -1,9 +1,11 @@
-Docker_Image_and_Tag_Name=
-REPOSITORY=
-PROJECT_ID=
+Docker_Image_and_Tag_Name=""
+REPOSITORY=""
+PROJECT_ID=""
+$ZONE=""
 
-  
-# task 1
+
+
+Task 1:-
 
 gcloud auth list
 gsutil cat gs://cloud-training/gsp318/marking/setup_marking_v2.sh | bash
@@ -22,8 +24,8 @@ cd marking
 ./step1_v2.sh
 
 
-# task 2
 
+Task 2:-
 cd ..
 cd valkyrie-app
 docker run -p 8080:8080 $Docker_Image_and_Tag_Name &
@@ -32,31 +34,38 @@ cd marking
 ./step2_v2.sh
 bash ~/marking/step2_v2.sh
 
-# task 3
+
+
+Task 3:-
 
 cd ..
 cd valkyrie-app
 
 gcloud artifacts repositories create $REPOSITORY \
     --repository-format=docker \
-    --location=us-central1 \
+    --location=$ZONE \
     --description="subcribe to quciklab" \
     --async 
 
-gcloud auth configure-docker us-central1-docker.pkg.dev
+gcloud auth configure-docker $ZONE-docker.pkg.dev
 
 docker images
 
 
-docker tag <image_id> us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name
-
-docker push us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name
 
 
-# task 4
+docker tag <Image_ID> $ZONE-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name
 
-sed -i s#IMAGE_HERE#us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name#g k8s/deployment.yaml
+docker push $ZONE-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name
 
-gcloud container clusters get-credentials valkyrie-dev --zone us-east1-d
+
+
+
+
+Task 4:-
+
+sed -i s#IMAGE_HERE#$ZONE-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name#g k8s/deployment.yaml
+
+gcloud container clusters get-credentials valkyrie-dev --$zone us-east1-d
 kubectl create -f k8s/deployment.yaml
 kubectl create -f k8s/service.yaml
